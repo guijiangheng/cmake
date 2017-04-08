@@ -25,3 +25,20 @@ void foo(int a, int b, int& c) {
 ```
 
 上面的项目编译后得到libfoo.so文件，注意`set(BUILD_SHARED_LIBS ON)`语句的位置，如果该语句在add_library命令之后，则仍将编译得到静态库。
+
+还可以对目标使用`get_target_property`和`set_target_properties`命令，或者更一般的`get_property`和`set_property`命令读取或者设置目标的属性。`get_target_property`命令的语法如下：
+
+```cmake
+get_target_property(VAR target property)
+```
+该命令获取目标的属性存储在变量`VAR`中，如果没有找到属性值，`VAR`的值为`NOTFOUND`。该命令能够从任何已创建的目标中获取属性值，不仅仅是当前的CMakeLists.txt文件中的目标。`set_target_properties`命令的语法如下所示：
+
+```cmake
+set_target_properties(
+    target1 target2 ...
+    PROPERTIES
+    prop1 value1
+    prop2 value2
+    ...
+)
+```
