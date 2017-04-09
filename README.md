@@ -30,6 +30,23 @@ It does end in an unescaped double quote.
 运行的结果如下图：<br>
 ![quoted argument](./images/quotedarg.png)<br>
 
+### Unquoted Argument
+Unquoted Argumen 没有被引号包围，除非转义，否则不允许包含空格，括号，#，"或者\\。转义和变量引用会被替换。下面是一个例子：
+``` cmake
+set(var name)
+foreach(arg
+    NoSpace
+    heh${var}
+    Escaped\ Space
+    This;Divides;Into;Five;Arguments
+    Escaped\;Semicolon
+    )
+  message("${arg}")
+endforeach()
+```
+输出结果为：<br>
+![unquoted argument](./images/unquoted.png)<br>
+
 ## 3.2 目标(Targets)
 
 CMake中最重要的就是目标。目标表示可执行文件，库以及一些由CMake生成的工具。每个add_library，add_executable和add_custom_target命令都会产生一个目标。例如下面的语句将产生一个foo静态库。
