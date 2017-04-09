@@ -150,7 +150,7 @@ CMakeLists.txt在不同的配置下为目标main设置不同的输出名。需�
 
 ## 3.5 变量和Cache
 
-CMake变量的作用于和其他语言不同。变量对当前的CMakeLists文件，函数，子目录的CMakeLists文件，任何通过include命令引入的文件都有效。然而当CMake处理子目录和函数时会使用当前的变量初始化一个新的环境。因此任何在子环境中对变量所做的修改都不会影响父目录。如果想要修改父目录的变量，可以为set命令加上PARENT_SCOPE参数。修改父环境的变量值不会影响自环境的变量，如下面的代码所示：
+CMake变量的作用域和其他语言不同，和Shell脚本语言类似。变量对当前的CMakeLists文件，函数，子目录的CMakeLists文件，任何通过include命令引入的文件都有效。然而当CMake处理子目录和函数时会使用当前的环境初始化一个新的作用域。因此任何在子环境中对变量所做的修改都不会影响父目录。如果想要修改父目录的变量，可以为set命令加上PARENT_SCOPE参数。修改父环境的变量值不会影响自环境的变量，如下面的代码所示：
 ```cmake
 set(name gui)
 set(name jiangheng PARENT_SCOPE)
@@ -171,7 +171,8 @@ set_property(CACHE CRYPTOBACKEND PROPERTY STRINGS "OpenSSL" "LibTomCrypt" "LibDE
 
 # 第四章 编写CMakeLists文件
 
-## if命令
+> if命令
+
 if支持一下操作：<br>
 if(VAR)：当变量不是空，0，FALSE，OFF或者NOTFOUND时为真<br>
 if(NOT VAR)：取反<br>
@@ -185,10 +186,31 @@ if(IS_ABSOLUTE name)：如果参数是绝对路径返回真<br>
 if(FILE1 IS_NEWER_THAN FILE2)：如果FILE1比FILE2更新，返回真<br>
 if(VAR MATCHES regex)：如果变量匹配正则表达式，返回真，注意直接使用变量名，而不是${VAR}<br>
 
-## 优先级
+> 优先级
+
 括号的优先级最高，然后是类似EXISTS，COMMAND，DEFINED等前缀，之后是EQUAL，LESS，GREATER，STREQUAL，STRLESS，STRGREATER和MATCHES等比较操作，再之后是NOT，最后是AND和OR。
 
-## 真假值
+> 真假值
+
 OFF，0，NO，FALSE，N，NOTFOUND，\*-NOTFOUND IGNORE被认为是false<br>
 ON，1，YES，TRUE，Y被认为是真<br>
 注意不区分大小写，因此true，True和TURE都被认为是真<br>
+
+> 函数和宏
+
+函数和宏的功能类似，区别在于函数会生成一个新的作用域，宏不会。CMake回味函数定一些变量，如ARGC，ARGN，ARGV，ARGV0，ARGV1。下面的例子展示了这些变量的含义：
+``` cmake
+function(foo name age)
+    message(STATUS "${ARGN}")
+    message(STATUS ${ARGC})
+    message(STATUS "${ARGV}")
+    message(STATUS ${ARGV0})
+    message(STATUS ${ARGV1})
+    message(STATUS ${ARGV2})
+    message(STATUS ${ARGV10})
+endfunction()
+
+foo(gui 23 33 44)
+```
+运行的结果如下：<br>
+![function](./images/function.png)<br>
