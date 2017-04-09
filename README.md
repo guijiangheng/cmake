@@ -198,7 +198,7 @@ ON，1，YES，TRUE，Y被认为是真<br>
 
 > 函数和宏
 
-函数和宏的功能类似，区别在于函数会生成一个新的作用域，宏不会。CMake回味函数定一些变量，如ARGC，ARGN，ARGV，ARGV0，ARGV1。下面的例子展示了这些变量的含义：
+函数和宏的功能类似，区别在于函数会生成一个新的作用域，宏不会。CMake会为函数定一些变量，如ARGC，ARGN，ARGV，ARGV0，ARGV1。下面的例子展示了这些变量的含义：
 ``` cmake
 function(foo name age)
     message(STATUS "${ARGN}")
