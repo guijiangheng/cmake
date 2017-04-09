@@ -4,14 +4,14 @@ CMake文件是由CMake语言编写的，文件名为CMakeLists.txt或者后缀�
 * 脚本(`<script>.cmake`)
 * 模块(`<module>.cmake`)
 
-单个的CMake脚本可以使用-P命令行选项，在CMake脚本模式下运行。脚本模式下只是运行源文件的中的命令，而不允许定义变异目标。下面的例子中，名为test.cmake的脚本包含以下内容：
+单个的CMake脚本可以使用-P命令行选项，在CMake脚本模式下运行。脚本模式下只是运行源文件的中的命令，而不允许定义编译目标。下面的例子中，名为test.cmake的脚本包含以下内容：
 ``` cmake
 # test.cmake
 message(hello world)
 add_executable(main main.cpp)
 ```
-使用-P运行的截图如下所示：
-![script mode](images/scriptmode.png)
+使用-P运行的截图如下所示：<br>
+![script mode](./images/scriptmode.png)<br>
 
 ### Quoted Argument
 CMake源文件由一条条CMake命令组成，命令的参数分为Quoted Argument和Unquoted Argument。Quoted Argument的内容被一对双引号括起来，转义字符和变量引用都会被替换，Quoted Argument被当成单独的一个参数。下面是一个引号参数的例子：
@@ -27,8 +27,8 @@ The text does not end on an escaped double-quote like \".
 It does end in an unescaped double quote.
 ")
 ```
-运行的结果如下图：
-![quoted argument](images/quotedarg.png)
+运行的结果如下图：<br>
+![quoted argument](,/images/quotedarg.png)<br>
 
 ## 3.2 目标(Targets)
 
