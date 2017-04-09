@@ -28,7 +28,7 @@ It does end in an unescaped double quote.
 ")
 ```
 运行的结果如下图：<br>
-![quoted argument](,/images/quotedarg.png)<br>
+![quoted argument](./images/quotedarg.png)<br>
 
 ## 3.2 目标(Targets)
 
