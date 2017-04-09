@@ -4,7 +4,7 @@ CMake文件是由CMake语言编写的，文件名为CMakeLists.txt或者后缀�
 * 脚本(`<script>.cmake`)
 * 模块(`<module>.cmake`)
 
-单个的CMake脚本可以使用-P命令行选项，在CMake脚本模式下运行。脚本模式下只是运行源文件的中的命令，而不允许定义编译目标。下面的例子中，名为test.cmake的脚本包含以下内容：
+单个的CMake脚本可以使用-P命令行选项，在CMake脚本模式下运行。脚本模式下只是运行源文件中的命令，因此不允许在脚本中定义编译目标。下面的例子中，名为test.cmake的脚本包含以下内容：
 ``` cmake
 # test.cmake
 message(hello world)
@@ -14,7 +14,7 @@ add_executable(main main.cpp)
 ![script mode](./images/scriptmode.png)<br>
 
 ### Quoted Argument
-CMake源文件由一条条CMake命令组成，命令的参数分为Quoted Argument和Unquoted Argument。Quoted Argument的内容被一对双引号括起来，转义字符和变量引用都会被替换，Quoted Argument被当成单独的一个参数。下面是一个引号参数的例子：
+CMake源文件由一条条命令组成，命令的参数分为Quoted Argument和Unquoted Argument。Quoted Argument的内容被一对双引号括起来，转义字符和变量引用都会被替换，Quoted Argument被当成单独的一个参数，下面是一个例子：
 ``` cmake
 # test.cmake
 set(variable hello world)
@@ -75,7 +75,7 @@ void foo(int a, int b, int& c) {
 
 上面的项目编译后得到libfoo.so文件，注意set(BUILD_SHARED_LIBS ON)语句的位置，如果该语句在add_library命令之后，则仍将编译得到静态库。
 
-还可以对目标使用get_target_property和set_target_properties命令，或者更一般的get_property和set_property命令读取或者设置目标的属性。get_target_property命令的语法如下：
+还可以对目标使用get_target_property和set_target_properties命令，或者更一般的get_property和set_property命令来读取或者设置目标的属性。get_target_property命令的语法如下：
 
 ```cmake
 get_target_property(VAR target property)
@@ -91,9 +91,9 @@ set_target_properties(
     ...
 )
 ```
-可以设置目标的OUTPUT_NAME属性来设置目标的文件名，CMake要求逻辑上的目标名唯一，可以通过这种方法让两个目标的文件名相同（不含后缀）。还可以设置`<CONFIG>_OUTPUT_NAME`属性为不同的配置设置不同的文件名，比如DEBUG, RELEASE, MINSIZEREL, RELWITHDEBINFO配置。下面是两个例子。
+可以通过设置目标的OUTPUT_NAME属性来设置目标的输出文件名，CMake要求逻辑上的目标名唯一，该方法可以让两个目标的使用相同的输出文件名（不含后缀）。还可以设置`<CONFIG>_OUTPUT_NAME`属性为不同的配置设置不同的文件名，比如DEBUG, RELEASE, MINSIZEREL, RELWITHDEBINFO配置。下面是两个例子。
 
-### 3.2.1 get_property例子
+> 3.2.1 get_property例子
 
 ``` cmake
 # CMakeLists.txt
@@ -118,7 +118,7 @@ foo/CMakeLists.txt添加了foo静态库，并未foo库设置了输出名bar，�
 `get_target_property() called with non-existent target "foo".`<br>
 这是因为执行查询时，foo目标还没有被添加到项目中。还有一点需要注意的是，如果没有为foo目标设置输出名，则CMake将会输出fooname-NOTFOUND，不要想当然的认为没有设置OUTPUT_NAME属性则查询的结果是foo。
 
-### 3.2.1 set_target_properties例子
+> 3.2.1 set_target_properties例子
 
 ```cmake
 # CMakeLists.txt
