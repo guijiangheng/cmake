@@ -305,6 +305,13 @@ message(STATUS ${PROJECT_SOURCE_DIR})
 -- C:/Users/gui/Desktop/test/foo
 ```
 一个项目可以包含多个project，每个project命令对应visual studio的sln文件。下面几幅图是在Windows下面运行cmake的结果：<br>
+> build/getst目录
+
 ![gtest.png](images/gtest.png)<br>
+
+> build/getst/foo目录
+
 ![foo.png](images/foo.png)<br>
+
+> Visual Studio Solution面板
 ![solution.png](images/solution.png)<br>
