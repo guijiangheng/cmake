@@ -181,8 +181,8 @@ if(VAR1 OR VAR2)：取或<br>
 if(COMMAND command-name)：如果给定的参数是命令则返回真<br>
 if(DEFINED VAR)：如果变量存在，不论变量的值是什么，返回真<br>
 if(EXISTS path)：如果文件名或者路径名存在返回真<br>
-if(IS_DIRECTORY name)：如果参数是路径名返回真<br>
-if(IS_ABSOLUTE name)：如果参数是绝对路径返回真<br>
+if(IS_DIRECTORY name)：如果参数是目录则返回真，目录必须存在，否则返回假<br>
+if(IS_ABSOLUTE name)：如果参数是绝对路径，不论路劲是否存在都返回真<br>
 if(FILE1 IS_NEWER_THAN FILE2)：如果FILE1比FILE2更新，返回真<br>
 if(VAR MATCHES regex)：如果变量匹配正则表达式，返回真，注意直接使用变量名，而不是${VAR}<br>
 
@@ -214,3 +214,97 @@ foo(gui 23 33 44)
 ```
 运行的结果如下：<br>
 ![function](./images/function.png)<br>
+
+## 第五章 系统检查
+
+> try_run命令
+
+try_run命令尝试编译并运行代码，语法如下：
+
+```
+try_run(
+    RUN_RESULT_VAR COMPILE_RESULT
+    bindir srcfile [CMAKE_FLAGS <Flags>]
+    [COMPILE_OUTPUT_VARIABLE comp]
+    [RUN_OUTPUT_VARIABLE run]
+    [OUTPUT_VARIABLE var]
+    [ARGS <arg1> <arg2> ...]
+)
+```
+
+try_run尝试编译一个源文件，将编译结果TRUE或者FALSE值存储到变量COMPILE_RESULT_VAR中。如果编译成功，执行可执行文件，将退出码存储到变量RUN_RESULT_VAR中。如果编译成功，但是执行失败RUN_RESULT_VAR的值被设置成FAILED_TO_RUN. COMPILE_RESULT_VARIABLE存储编译期的输出，RUN_OUTPUT_VARIABLE存储可执行文件的输出。出于兼容性的考虑，保留了OUTPUT_VARIABLE，该变量存储编译和执行的输出，不过该变量不能和COMPILE_OUTPUT_VARIABLE或者RUN_OUTPUT_VARIABLE同时使用。下面是一个例子：
+
+> 使用try_run检查机器的字节序
+
+``` c++
+#include <iostream>
+using namespace std;
+
+int main() {
+    union {
+        long l;
+        char c[sizeof(long)];
+    } u;
+    u.l = 1;
+    cout << "hello world" << endl;
+    return u.c[sizeof(long) - 1] == 1;
+}
+```
+
+``` cmake
+cmake_minimum_required(VERSION 3.0)
+project(gtest)
+
+try_run(RUN_RESULT_VAR COMPILE_RESULT_VAR
+	${CMAKE_BINARY_DIR}
+	${PROJECT_SOURCE_DIR}/byteorder.cpp
+	RUN_OUTPUT_VARIABLE RUN_OUTPUT
+	COMPILE_OUTPUT_VARIABLE COMPILE_OUTPUT
+)
+
+message(STATUS ${RUN_RESULT_VAR})
+message(STATUS ${COMPILE_RESULT_VAR})
+message(STATUS ${RUN_OUTPUT})
+message(STATUS ${COMPILE_OUTPUT})
+```
+
+输出的结果如下所示：<br>
+![try_run](images/try_run.png)<br>
+
+上面的代码中使用了PROJECT_SOURCE_DIR，PROJECT_SOURCE_DIR和CMAKE_SOURCE_DIR的区别在于，CMAKE_SOURCE_DIR只最顶层的CMakeLists.txt所在的目录，而PROJECT_SOURCE_DIR则是指最近的project()命令所在的目录。下面的例子中展示两者的区别：
+
+> PROJECT_SOURCE_DIR和CMAKE_SOURCE_DIR的区别
+``` cmake
+# CMakeLists.txt
+cmake_minimum_required(VERSION 3.0)
+project(gtest)
+
+message(STATUS ${CMAKE_SOURCE_DIR})
+message(STATUS ${PROJECT_SOURCE_DIR})
+
+add_subdirectory(foo)
+add_executable(gtest main.cpp)
+target_link_libraries(gtest foo)
+```
+
+``` cmake
+# foo/CMakeLists.txt
+project(foo)
+add_library(foo foo.cpp)
+
+message(STATUS ${CMAKE_SOURCE_DIR})
+message(STATUS ${PROJECT_SOURCE_DIR})
+```
+
+输出结果如下：
+
+```
+-- C:/Users/gui/Desktop/test
+-- C:/Users/gui/Desktop/test
+-- C:/Users/gui/Desktop/test
+-- C:/Users/gui/Desktop/test/foo
+```
+一个项目可以包含多个project，每个project命令对应visual studio的sln文件。下面几幅图是在Windows下面运行cmake的结果：<br>
+![gtest.png](images/gtest.png)<br>
+![foo.png](images/foo.png)<br>
+![solution.png](images/solution.png)<br>
