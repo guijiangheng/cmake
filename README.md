@@ -173,7 +173,7 @@ set_property(CACHE CRYPTOBACKEND PROPERTY STRINGS "OpenSSL" "LibTomCrypt" "LibDE
 ![cache](images/cache.png)<br>
 虽然没有报错，显然不是想要的结果。当确信设置的值正确时可以不要:TYPE，直接使用-DVAR=VALUE。
 
-注意不要与gcc的使用混淆，gcc也支持-D命令行选项，用来设置编译器的预定义值。比如-DVAR将设置宏VAR的值为1，-DVAR=defintion将设置宏VAR的值为definition。而cmake的-D是设置cache变量。
+注意不要与gcc的使用混淆，gcc也支持-D命令行选项，用来设置编译器的预定义值。比如-DVAR将设置宏VAR的值为1，-DVAR=defintion将设置宏VAR的值为definition。而cmake的-D是用来设置cache变量。不过gcc -D的用法和cmake的add_definitions命令相似，第5.5节将对add_definitions进行介绍。
 
 # 第四章 编写CMakeLists文件
 
@@ -323,4 +323,45 @@ message(STATUS ${PROJECT_SOURCE_DIR})
 
 ![solution.png](images/solution.png)<br>
 
-### 为编译传递值
+### 5.5 为编译传递值
+
+可以通过add_definitions命令为编译器定义预编译值，用法和gcc -D命令行选项类似。add_definitions(-DVAR)将设置预编译宏VAR，add_definitions(-DVAR=VALUE)将为预编译宏VAR设置值。当调用add_definitions命令时，会为当前目录设置预定义值，当add_subdirectory进入子目录时，将会使用当前的预定义值初始化子目录。如果想要更细腻的控制，可以使用目录，目标以及源文件定义的COMPILE_DEFINITIONS属性，比如：
+``` cmake
+add_library(mylib src1.c src2.c)
+add_executable(myexe main1.c)
+set_property(
+    DIRECTORY
+    PROPERTY COMPILE_DEFINITIONS A AV=1
+)
+set_property(
+    TARGET mylib
+    PROPERTY COMPILE_DEFINITIONS B BV=2
+)
+set_property(
+    SOURCE src1.c
+    PROPERTY COMPILE_DEFINITIONS C CV=3
+)
+```
+将会为源文件设置以下宏：<br>
+```
+src1.c：-DA -DAV=1 -DB -DBV=2 -DC -DCV=3
+src2.c：-DA -DAV=1 -DB -DBV=2
+main1.c：-DA -DAV=1
+```
+需要注意的是set_property将用新值替代旧值，APPEND选项将添加值而不是替旧值。比如：
+``` cmake
+set_property(
+    SOURCE sr1.c
+    APPEND PROPERTY COMPILE_DEFINITIONS D DV=4
+)
+```
+将为src1.c添加预编译"-DD -DDV=4"。还可以通过COMPILE_DEFINITIONS_<CONFIG>为不同的配置设置预编译值。
+
+另一种方法是通过配置文件的方式。配置文件的方式需要使用configure_file命令，该命令接受两个参数，一个指定输入文件的位置，另一个指定输出文件的位置。可以通过以下方式在输入文件中设置预定义值：<br>
+> `#cmakedefine VAR`<br>
+如果cmake中变量VAR的值为真，那么生成文件将包含该一行：#define VAR。<br>
+
+> `${VAR}` 或者 @VAR@
+使用cmake中VAR变量的值替换掉
+
+因为有些语言可能有${}的语法，因此可以通过@ONLY的选项告诉cmake只对@VAR@进行替换。
