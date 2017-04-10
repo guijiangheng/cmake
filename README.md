@@ -114,7 +114,7 @@ add_library(foo foo.cpp)
 set_target_properties(foo PROPERTIES OUTPUT_NAME bar)
 ```
 
-foo/CMakeLists.txt添加了foo静态库，并未foo库设置了输出名bar，运行该配置会CMake打印信息bar，并在foo文件夹下生成libbar.a文件。如果将add_subdirectory命令放在message命令之后，则CMake会给出错误信息：<br>
+foo/CMakeLists.txt添加了foo静态库，并为foo库设置了输出名bar，运行该配置会CMake打印信息bar，并在foo文件夹下生成libbar.a文件。如果将add_subdirectory命令放在message命令之后，则CMake会给出错误信息：<br>
 `get_target_property() called with non-existent target "foo".`<br>
 这是因为执行查询时，foo目标还没有被添加到项目中。还有一点需要注意的是，如果没有为foo目标设置输出名，则CMake将会输出fooname-NOTFOUND，不要想当然的认为没有设置OUTPUT_NAME属性则查询的结果是foo。
 
@@ -168,6 +168,12 @@ set(CRYPTOBACKEND "OpenSSL" CACHE STRING "select a cryptography backend")
 set_property(CACHE CRYPTOBACKEND PROPERTY STRINGS "OpenSSL" "LibTomCrypt" "LibDES")
 ```
 这样CRYPTOBACKEND变量只能取OpenSSL，LibTomCrypt或LibDES了。如果变量存在cache中，仍然可以通过set命令设置变量的值。只有当环境中不存在变量，才会查找cache中的变量。因此set命令只是设置当前的环境而没有修改cache中的值。通常不希望CMakeLists文件对cache中的变量做修改，因为这些变量是由用户通过图形界面设置的。因此set(VAR ON CACHE BOOL "doc")只在cache中不存在变量时才起作用，否则没有任何效果。如果确实想要修改cache中的变量，需要加上FORCE选项。
+
+除了可以使用交互式命令行或者图形界面的方式设置CACHE变量之外，还可以通过命令行参数设置CACHE变量。形如-DCACHE_VAR:TYPE=VALUE的命令行参数将会设置CACHE变量CACHE_VAR的值为VALUE。VALUE的类型必须与TYPE匹配，形如-DNAME:BOOL=gui运行的结果如下：<br>
+![cache](images/cache.png)<br>
+虽然没有报错，显然不是想要的结果。当确信设置的值正确时可以不要:TYPE，直接使用-DVAR=VALUE。
+
+注意不要与gcc的使用混淆，gcc也支持-D命令行选项，用来设置编译器的预定义值。比如-DVAR将设置宏VAR的值为1，-DVAR=defintion将设置宏VAR的值为definition。而cmake的-D是设置cache变量。
 
 # 第四章 编写CMakeLists文件
 
@@ -314,4 +320,7 @@ message(STATUS ${PROJECT_SOURCE_DIR})
 ![foo.png](images/foo.png)<br>
 
 > Visual Studio Solution面板
+
 ![solution.png](images/solution.png)<br>
+
+### 为编译传递值
